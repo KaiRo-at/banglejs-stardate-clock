@@ -1,5 +1,7 @@
 // Stardate clock face, by KaiRo.at, 2021
 
+var redrawClock = true;
+
 // Load fonts
 require("FontHaxorNarrow7x17").add(Graphics);
 
@@ -38,7 +40,7 @@ function updateStardate() {
   //g.setBgColor("#FF6600"); // for debugging
   g.clearRect(sdatePosLeft,
               sdatePosTop,
-              sdatePosLeft + g.stringWidth(sdatestring),
+              sdatePosLeft + g.stringWidth(sdatestring) + 1,
               sdatePosTop + g.getFontHeight());
   // draw the current time
   g.setColor("#9C9CFF");
@@ -47,7 +49,9 @@ function updateStardate() {
 
   // Schedule next when an update to the last decimal is due.
   var mstonextUpdate = (Math.ceil(sdateval * decFactor) / decFactor - sdateval) * secondsPerYear;
-  setTimeout(updateStardate, mstonextUpdate);
+  if (redrawClock) {
+    setTimeout(updateStardate, mstonextUpdate);
+  }
 }
 
 // Clear the screen once, at startup.
@@ -68,6 +72,20 @@ g.fillRect(sbarWid+outRad+gap+1,0,g.getWidth(),hbarHt);
 // second color of side bar
 g.setColor("#008484");
 g.fillRect(0,sbarGapPos+gap+1,sbarWid,g.getHeight());
-// draw immediately at first
+// Draw immediately at first.
 updateStardate();
-//var secondInterval = setInterval(draw, 1000);
+// Make sure widgets can be shown.
+Bangle.loadWidgets();
+Bangle.drawWidgets();
+// Show launcher when middle button pressed
+setWatch(Bangle.showLauncher, BTN2, { repeat: false, edge: "falling" });
+// Stop updates when LCD is off, restart when on
+Bangle.on('lcdPower',on=>{
+  if (on) {
+    redrawClock = true;
+    updateStardate(); // draw immediately
+  }
+  else {
+    redrawClock = false;
+  }
+});
