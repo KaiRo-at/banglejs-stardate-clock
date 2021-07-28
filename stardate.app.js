@@ -1,33 +1,52 @@
 // Stardate clock face, by KaiRo.at, 2021
 
 var redrawClock = true;
+var clockface = "digital";
 
 // Load fonts
 require("FontHaxorNarrow7x17").add(Graphics);
 
 // LCARS dimensions
-const sbarWid = 30;
+const widgetsHeight = 24;
+const sbarWid = 50;
 const hbarHt = 5;
 const outRad = 25;
 const inRad = outRad - hbarHt;
 const gap = 3;
-const divisionPos = 60;
+const divisionPos = 80;
 const sbarGapPos = 150;
 const lowerTop = divisionPos+gap+1;
 
 // Star Trek famously premiered on Thursday, September 8, 1966, at 8:30 p.m.
 // See http://www.startrek.com/article/what-if-the-original-star-trek-had-debuted-on-friday-nights
 const gSDBase = new Date("September 8, 1966 20:30:00 EST");
-const sdatePosTop = 10;
-const sdatePosLeft = sbarWid + 120;
+const sdatePosTop = widgetsHeight + 10;
+const sdatePosLeft = sbarWid + 100;
 const sdateDecimals = 1;
 const secondsPerYear = 86400 * 365.2425;
 const sdateDecFactor = Math.pow(10, sdateDecimals);
 
-const ctimePosTop = lowerTop + 35;
-const ctimePosLeft = sbarWid + 35;
-const cdatePosTop = lowerTop + 120;
-const cdatePosLeft = sbarWid + 38;
+const clockAreaLeft = sbarWid + inRad / 2;
+const clockAreaTop = lowerTop + hbarHt + inRad / 2;
+
+const ctimePosTop = clockAreaTop + 15;
+const ctimePosLeft = clockAreaLeft + 20;
+const cdatePosTop = clockAreaTop + 85;
+const cdatePosLeft = clockAreaLeft + 25;
+
+const clockWid = g.getWidth() - clockAreaLeft;
+const clockHt = g.getHeight() - clockAreaTop;
+const clockCtrX = Math.floor(clockAreaLeft + clockWid / 2);
+const clockCtrY = Math.floor(clockAreaTop + clockHt / 2);
+const analogRad = Math.floor(Math.min(clockWid, clockHt) / 2);
+
+const analogMainLineLength = 10;
+const analogSubLineLength = 5;
+
+var lastSDateString;
+var lastTimeString;
+var lastDateString;
+var lastAnalogDate;
 
 function updateStardate() {
   var curDate = new Date();
@@ -41,15 +60,18 @@ function updateStardate() {
   g.reset();
   // Set Font
   g.setFont("HaxorNarrow7x17", 2);
-  // Clear the area where we want to draw the time.
-  //g.setBgColor("#FF6600"); // for debugging
-  g.clearRect(sdatePosLeft,
-              sdatePosTop,
-              sdatePosLeft + g.stringWidth(sdatestring) + 3,
-              sdatePosTop + g.getFontHeight());
+  if (lastSDateString) {
+    // Clear the area where we want to draw the time.
+    //g.setBgColor("#FF6600"); // for debugging
+    g.clearRect(sdatePosLeft,
+                sdatePosTop,
+                sdatePosLeft + g.stringWidth(lastSDateString) + 1,
+                sdatePosTop + g.getFontHeight());
+  }
   // Draw the current stardate.
   g.setColor("#FFCF00");
   g.drawString(sdatestring, sdatePosLeft, sdatePosTop);
+  lastSDateString = sdatestring;
 
   // Schedule next when an update to the last decimal is due.
   var mstonextUpdate = (Math.ceil(sdateval * sdateDecFactor) / sdateDecFactor - sdateval) * secondsPerYear;
@@ -61,6 +83,21 @@ function updateStardate() {
 function updateConventionalTime() {
   var curDate = new Date();
 
+  if (clockface == "digital") {
+    drawDigitalClock(curDate);
+  }
+  else {
+    drawAnalogClock(curDate);
+  }
+
+  // Schedule next when an update to the last second is due.
+  var mstonextUpdate = Math.ceil(curDate / 1000) * 1000 - curDate;
+  if (redrawClock) {
+    setTimeout(updateConventionalTime, mstonextUpdate);
+  }
+}
+
+function drawDigitalClock(curDate) {
   var timestring = ("0"+curDate.getHours()).substr(-2) + ":" +("0"+curDate.getMinutes()).substr(-2) + ":" +("0"+curDate.getSeconds()).substr(-2);
   var datestring = ""+curDate.getFullYear() + "-" +("0"+curDate.getMonth()).substr(-2) + "-" +("0"+curDate.getDate()).substr(-2);
 
@@ -68,33 +105,61 @@ function updateConventionalTime() {
   g.reset();
   // Set Font
   g.setFont("HaxorNarrow7x17", 3);
-  // Clear the area where we want to draw the time.
-  //g.setBgColor("#FF6600"); // for debugging
-  g.clearRect(ctimePosLeft,
-              ctimePosTop,
-              ctimePosLeft + g.stringWidth(timestring) + 6,
-              ctimePosTop + g.getFontHeight());
+  if (lastTimeString) {
+    // Clear the area where we want to draw the time.
+    //g.setBgColor("#FF6600"); // for debugging
+    g.clearRect(ctimePosLeft,
+                ctimePosTop,
+                ctimePosLeft + g.stringWidth(lastTimeString) + 1,
+                ctimePosTop + g.getFontHeight());
+  }
   // Draw the current time.
   g.setColor("#9C9CFF");
   g.drawString(timestring, ctimePosLeft, ctimePosTop);
+  lastTimeString = timestring;
 
-  // Set Font
-  g.setFont("HaxorNarrow7x17", 2);
-  // Clear the area where we want to draw the time.
-  //g.setBgColor("#FF6600"); // for debugging
-  g.clearRect(cdatePosLeft,
-              cdatePosTop,
-              cdatePosLeft + g.stringWidth(datestring) + 3,
-              cdatePosTop + g.getFontHeight());
-  // Draw the current date.
-  g.setColor("#A09090");
-  g.drawString(datestring, cdatePosLeft, cdatePosTop);
-
-  // Schedule next when an update to the last second is due.
-  var mstonextUpdate = Math.ceil(curDate / 1000) - curDate * 1000;
-  if (redrawClock) {
-    setTimeout(updateConventionalTime, mstonextUpdate);
+  if (datestring != lastDateString) {
+    // Set Font
+    g.setFont("HaxorNarrow7x17", 2);
+    if (lastDateString) {
+      // Clear the area where we want to draw the time.
+      //g.setBgColor("#FF6600"); // for debugging
+      g.clearRect(cdatePosLeft,
+                  cdatePosTop,
+                  cdatePosLeft + g.stringWidth(lastDateString) + 1,
+                  cdatePosTop + g.getFontHeight());
+    }
+    // Draw the current date.
+    g.setColor("#A09090");
+    g.drawString(datestring, cdatePosLeft, cdatePosTop);
+    lastDateString = datestring;
   }
+}
+
+function drawAnalogClock(curDate) {
+  // Reset the state of the graphics library.
+  g.reset();
+  // Draw the main hour lines.
+  g.setColor("#9C9CFF");
+  g.drawCircle(clockCtrX, clockCtrY, analogRad);
+  g.drawLineAA(clockCtrX, clockCtrY - analogRad, clockCtrX, clockCtrY - analogRad + analogMainLineLength);
+  g.drawLineAA(clockCtrX, clockCtrY + analogRad, clockCtrX, clockCtrY + analogRad - analogMainLineLength);
+  g.drawLineAA(clockCtrX - analogRad, clockCtrY, clockCtrX - analogRad + analogMainLineLength, clockCtrY);
+  g.drawLineAA(clockCtrX + analogRad, clockCtrY, clockCtrX + analogRad - analogMainLineLength, clockCtrY);
+}
+
+function switchClockface() {
+  if (clockface == "digital") {
+    clockface = "analog";
+  }
+  else {
+    clockface = "digital";
+  }
+  // Clear whole lower area.
+  g.clearRect(clockAreaLeft,clockAreaTop,g.getWidth(),g.getHeight());
+  lastTimeString = undefined;
+  lastDateString = undefined;
+  lastAnalogDate = undefined;
 }
 
 // Clear the screen once, at startup.
@@ -104,7 +169,7 @@ g.clear();
 // Upper section: rounded corner.
 g.setColor("#A09090");
 g.fillCircle(outRad,divisionPos-outRad,outRad);
-g.fillRect(outRad,divisionPos-outRad,outRad*2,divisionPos);
+g.fillRect(outRad,divisionPos-outRad,sbarWid+inRad,divisionPos);
 g.fillRect(outRad,divisionPos-hbarHt,sbarWid+outRad,divisionPos); // div bar stub
 g.fillRect(0,0,sbarWid,divisionPos-outRad); // side bar
 g.setColor("#000000"); // blocked out areas of corner
@@ -116,7 +181,7 @@ g.fillRect(sbarWid+outRad+gap+1,divisionPos-hbarHt,g.getWidth(),divisionPos);
 // Lower section: rounded corner.
 g.setColor("#E7ADE7");
 g.fillCircle(outRad,lowerTop+outRad,outRad);
-g.fillRect(outRad,lowerTop,outRad*2,lowerTop+outRad);
+g.fillRect(outRad,lowerTop,sbarWid+inRad,lowerTop+outRad);
 g.fillRect(outRad,lowerTop,sbarWid+outRad,lowerTop+hbarHt); // div bar stub
 g.fillRect(0,lowerTop+outRad,sbarWid,sbarGapPos); // side bar
 g.setColor("#000000"); // blocked out areas of corner
@@ -147,4 +212,8 @@ Bangle.on('lcdPower',on=>{
   else {
     redrawClock = false;
   }
+});
+Bangle.on('touch', button=>{
+  // button == 1 is left, 2 is right
+  switchClockface();
 });
