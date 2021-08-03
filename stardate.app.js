@@ -146,6 +146,10 @@ function drawDigitalClock(curDate) {
 function drawAnalogClock(curDate) {
   // Reset the state of the graphics library.
   g.reset();
+  // Init variables for drawing any seconds we have not drawn.
+  // If minute changed, we'll set for the full wheel below.
+  var firstDrawSecond = lastAnalogDate ? lastAnalogDate.getSeconds() + 1 : curDate.getSeconds();
+  var lastDrawSecond = curDate.getSeconds();
   if (!lastAnalogDate || curDate.getMinutes() != lastAnalogDate.getMinutes()) {
     // Draw the main hour lines.
     //g.setColor("#9C9CFF");
@@ -158,30 +162,33 @@ function drawAnalogClock(curDate) {
       let innerY = clockCtrY - (analogRad - analogMainLineLength) * Math.cos(i * Math.PI / 30);
       g.drawLineAA(edgeX, edgeY, innerX, innerY);
     }
-    for (let i = 0; i < 60; i++) {
-      if (i <= curDate.getSeconds()) {
-        g.setColor("#E7ADE7");
-      }
-      else {
-        g.setColor(i % 5 == 0 ? "#9C9CFF": "#000000");
-      }
-      let edgeX = clockCtrX + analogRad * Math.sin(i * Math.PI / 30);
-      let edgeY = clockCtrY - analogRad * Math.cos(i * Math.PI / 30);
-      let innerX = clockCtrX + (analogRad - analogSubLineLength) * Math.sin(i * Math.PI / 30);
-      let innerY = clockCtrY - (analogRad - analogSubLineLength) * Math.cos(i * Math.PI / 30);
-      g.drawLineAA(edgeX, edgeY, innerX, innerY);
+    // Set for drawing the full second wheel.
+    firstDrawSecond = 0;
+    lastDrawSecond = 59;
+  }
+  // Draw the second wheel, or the parts of it that we haven't done yet.
+  for (let i = firstDrawSecond; i <= lastDrawSecond; i++) {
+    if (i <= curDate.getSeconds()) {
+      g.setColor("#E7ADE7");
     }
+    else {
+      g.setColor(i % 5 == 0 ? "#9C9CFF": "#000000");
+    }
+    let edgeX = clockCtrX + analogRad * Math.sin(i * Math.PI / 30);
+    let edgeY = clockCtrY - analogRad * Math.cos(i * Math.PI / 30);
+    let innerX = clockCtrX + (analogRad - analogSubLineLength) * Math.sin(i * Math.PI / 30);
+    let innerY = clockCtrY - (analogRad - analogSubLineLength) * Math.cos(i * Math.PI / 30);
+    g.drawLineAA(edgeX, edgeY, innerX, innerY);
   }
   if (lastAnalogDate) {
     // Clear previous hands.
     g.setColor("#000000");
-    if (curDate.getHours() != lastAnalogDate.getHours()) {
-      // Clear hour hand.
-      let HhEdgeX = clockCtrX + analogHourHandLength * Math.sin(curDate.getHours() * Math.PI / 6);
-      let HhEdgeY = clockCtrY - analogHourHandLength * Math.cos(curDate.getHours() * Math.PI / 6);
-      g.drawLineAA(HhEdgeX, HhEdgeY, clockCtrX, clockCtrY);
-    }
     if (curDate.getMinutes() != lastAnalogDate.getMinutes()) {
+      // Clear hour hand.
+      let HhAngle = (lastAnalogDate.getHours() + lastAnalogDate.getMinutes() / 60) * Math.PI / 6;
+      let HhEdgeX = clockCtrX + analogHourHandLength * Math.sin(HhAngle);
+      let HhEdgeY = clockCtrY - analogHourHandLength * Math.cos(HhAngle);
+      g.drawLineAA(HhEdgeX, HhEdgeY, clockCtrX, clockCtrY);
       // Clear minute hand.
       let MhEdgeX = clockCtrX + analogMinuteHandLength * Math.sin(lastAnalogDate.getMinutes() * Math.PI / 30);
       let MhEdgeY = clockCtrY - analogMinuteHandLength * Math.cos(lastAnalogDate.getMinutes() * Math.PI / 30);
@@ -191,21 +198,15 @@ function drawAnalogClock(curDate) {
   if (!lastAnalogDate || curDate.getMinutes() != lastAnalogDate.getMinutes()) {
     g.setColor("#A09090");
     // Draw hour hand.
-    let HhEdgeX = clockCtrX + analogHourHandLength * Math.sin(curDate.getHours() * Math.PI / 6);
-    let HhEdgeY = clockCtrY - analogHourHandLength * Math.cos(curDate.getHours() * Math.PI / 6);
+    let HhAngle = (curDate.getHours() + curDate.getMinutes() / 60) * Math.PI / 6;
+    let HhEdgeX = clockCtrX + analogHourHandLength * Math.sin(HhAngle);
+    let HhEdgeY = clockCtrY - analogHourHandLength * Math.cos(HhAngle);
     g.drawLineAA(HhEdgeX, HhEdgeY, clockCtrX, clockCtrY);
     // Draw minute hand.
     let MhEdgeX = clockCtrX + analogMinuteHandLength * Math.sin(curDate.getMinutes() * Math.PI / 30);
     let MhEdgeY = clockCtrY - analogMinuteHandLength * Math.cos(curDate.getMinutes() * Math.PI / 30);
     g.drawLineAA(MhEdgeX, MhEdgeY, clockCtrX, clockCtrY);
   }
-  // Draw second "hand".
-  g.setColor("#E7ADE7");
-  let edgeX = clockCtrX + analogRad * Math.sin(curDate.getSeconds() * Math.PI / 30);
-  let edgeY = clockCtrY - analogRad * Math.cos(curDate.getSeconds() * Math.PI / 30);
-  let innerX = clockCtrX + (analogRad - analogSubLineLength) * Math.sin(curDate.getSeconds() * Math.PI / 30);
-  let innerY = clockCtrY - (analogRad - analogSubLineLength) * Math.cos(curDate.getSeconds() * Math.PI / 30);
-  g.drawLineAA(edgeX, edgeY, innerX, innerY);
   lastAnalogDate = curDate;
 }
 
