@@ -1,4 +1,4 @@
-// Stardate clock face, by KaiRo.at, 2021-2022
+// Stardate clock face, by KaiRo.at, 2021
 
 var redrawClock = true;
 var clockface = "digital";
@@ -6,46 +6,45 @@ var clockface = "digital";
 // note: Bangle.js 1 has 240x240, 2 has 176x176 screen
 
 // Load fonts
-if (g.getWidth() < 200) { // Bangle.js 2
-  //require("Font6x12").add(Graphics);
-  //const fontName = "6x12";
-  require("FontHaxorNarrow7x17").add(Graphics);
-  const fontName = "HaxorNarrow7x17";
-  const fontBaseHeight = 17;
-  const fontSize = 2;
-  const fontSizeLarge = 3;
-}
-else {
-  require("FontHaxorNarrow7x17").add(Graphics);
-  const fontName = "HaxorNarrow7x17";
-  const fontBaseHeight = 17;
-  const fontSize = 2;
-  const fontSizeLarge = 3;
-}
+Graphics.prototype.setFontAntonio27 = function(scale) {
+  // Actual height 23 (23 - 1)
+  g.setFontCustom(atob("AAAAAAGAAAAwAAAGAAAAwAAAGAAAAwAAAAAAAAAAAAAAAAAADAAAA4AAAHAAAAAAAAAAAAAAAAAAAAAA4AAB/AAD/4AH/4AP/wAf/gAD/AAAeAAAAAAAAAAAAA///AP//+D///4eAAPDgAA4cAAHD///4P//+A///gAAAAAAAAAAAAAAYAAAHAAAA4AAAOAAAD///4f///D///4AAAAAAAAAAAAAAAAAAAAAAA/gD4P8B/D/g/4cAfzDgP4Yf/8DD/+AYP/ADAGAAAAAAAAAAAAHwD8B+AfwfwD/DgMA4cDgHDgeA4f///B/3/wH8P8AAAAAAAAAAAAOAAAPwAAP+AAP/wAf8OAf4BwD///4f///D///4AABwAAAGAAAAAAAAAAAAAAD/4Pwf/h/D/4P4cMAHDjgA4cf//Dh//4cH/8AAAAAAAAAAAAAAH//8B///wf///Dg4A4cHAHDg4A4f3//B+f/wHh/8AAAAAAAAAAAAAAcAAADgAA4cAD/DgH/4cH//Dv/4Af/gAD/gAAfAAADgAAAAAAAAAAAAH4f8B///wf///Dg8A4cDAHDg8A4f///B///wH8/8AAAAAAAAAAAAAAH/h4B/+Pwf/5/DgHA4cA4HDgHA4f///B///wH//8AAAAAAAAAAAAAAAAAAAHgeAA8DwAHgeAAAAAAAAAA"), 45, atob("CQcKDAsMDAwMDAwMDAc="), 27+(scale<<8)+(1<<16));
+};
+Graphics.prototype.setFontAntonio42 = function(scale) {
+  // Actual height 36 (36 - 1)
+  g.setFontCustom(atob("AAAAAAAAAAAAAAAAAcAAAAAAcAAAAAAcAAAAAAcAAAAAAcAAAAAAcAAAAAAcAAAAAAcAAAAAAcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHgAAAAAHgAAAAAHgAAAAAHgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgAAAAAfgAAAAH/gAAAB//gAAAf//gAAH//4AAB//+AAAf//gAAH//4AAAf/+AAAAf/gAAAAf4AAAAAeAAAAAAAAAAAAAAAAAAAAAAAAAAAA////gAH////+AP/////Af/////gf/////gfAAAAPgeAAAAHgeAAAAHgfAAAAPgf/////gf/////gP/////AH////+AB////4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAB4AAAAAB4AAAAAB4AAAAADwAAAAAHwAAAAAP/////gf/////gf/////gf/////gf/////gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/8AAPgH/8AD/gP/8AP/gP/8A//gf/8B//gfAAH/ngeAAf+HgeAB/4HgfAH/gHgf//+AHgP//4AHgH//wAHgD/+AAHgAPgAAAAAAAAAAAAAAAAAAAAAAAAAA+AAfwAH+AAf+AP+AAf/AP+AAf/Af+AAf/gfADwAPgeADwAHgeADwAHgfAH4APgf///h/gf/////AP/+///AH/+f/+AB/4H/4AAAAAAAAAAAAAAAAAAAAAAAAAAHAAAAAA/gAAAAH/gAAAB//gAAAP//gAAB//HgAAf/wHgAD/8AHgAf/AAHgAf/////gf/////gf/////gf/////gf/////gAAAAHgAAAAAHgAAAAAHAAAAAAAAAAAAAAAAAAAAAAAf//gP8Af//gP+Af//gP/Af//gP/gf/+AAfgeB8AAHgeB4AAHgeB8AAHgeB////geB////geA////AeAf//+AAAD//wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf///gAD////8AH/////AP/////Af/////gfAPgAfgeAPAAHgeAPAAHgeAPAAHgf+PgAPgf+P///gP+H///AH+H//+AB+B//8AAAAD8AAAAAAAAAAAAAAAAAAAAAAAeAAAAAAeAAAAAAeAAAAPgeAAAP/geAAD//geAA///geAH///geB///+AeP//4AAe//8AAAf//AAAAf/wAAAAf+AAAAAfwAAAAAeAAAAAAAAAAAAAAAAAAAAAAAAAAAB/wH/4AH/8f/+AP/////Af/////gf/////geAH4APgeADgAHgeADgAHgeAHwAHgf/////gf/////gP/////AH/8//+AB/wH/4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//gPgAH//4P+AP//8P/Af//+P/AfwB+P/geAAeAPgeAAeAHgeAAeAHgfAAeAPgf/////gP/////AP/////AH////8AA////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD4APgAAH4AfgAAH4AfgAAH4AfgAAH4AfgAAD4APgAAAAAAAAAAAAAAA="), 45, atob("DgsPEhESEhISEhISEgo="), 42+(scale<<8)+(1<<16));
+};
+const fontName = "Antonio27";
+const fontNameLarge = "Antonio42";
+const fontSize = 1;
+const fontSizeLarge = 1;
+const fontHeightLarge = 42 * fontSizeLarge;
 
 // LCARS dimensions
 if (g.getWidth() < 200) { // Bangle.js 2
   const baseUnit1 = 3;
   const baseUnit2 = 2;
+  const baseUnit3 = 7;
 }
 else {
   const baseUnit1 = 5;
   const baseUnit2 = 3;
+  const baseUnit3 = 10;
 }
 const widgetsHeight = 24;
-const sbarWid = baseUnit1 * 10;
+const sbarWid = baseUnit3 * 5;
 const hbarHt = baseUnit1;
 const outRad = baseUnit1 * 5;
 const inRad = outRad - hbarHt;
 const gap = baseUnit2;
-const divisionPos = baseUnit1 * 16;
-const sbarGapPos = baseUnit1 * 30;
+const divisionPos = baseUnit3 * 8;
+const sbarGapPos = baseUnit3 * 15;
 const lowerTop = divisionPos+gap+1;
 
 // Star Trek famously premiered on Thursday, September 8, 1966, at 8:30 p.m.
 // See http://www.startrek.com/article/what-if-the-original-star-trek-had-debuted-on-friday-nights
 const gSDBase = new Date("September 8, 1966 20:30:00 EST");
-const sdatePosBottom = divisionPos - hbarHt;
+const sdatePosBottom = divisionPos - hbarHt - 1;
 const sdatePosRight = g.getWidth() - baseUnit2;
 const sdateDecimals = 1;
 const secondsPerYear = 86400 * 365.2425;
@@ -56,9 +55,9 @@ const clockAreaTop = lowerTop + hbarHt + inRad / 2;
 const clockWid = g.getWidth() - clockAreaLeft;
 const clockHt = g.getHeight() - clockAreaTop;
 
-const ctimePosTop = clockAreaTop + baseUnit1 * 3;
+const ctimePosTop = clockAreaTop + baseUnit1 * 5;
 const ctimePosCenter = clockAreaLeft + clockWid / 2;
-const cdatePosTop = ctimePosTop + fontBaseHeight * fontSizeLarge;
+const cdatePosTop = ctimePosTop + fontHeightLarge;
 const cdatePosCenter = clockAreaLeft + clockWid / 2;
 
 const clockCtrX = Math.floor(clockAreaLeft + clockWid / 2);
@@ -153,8 +152,11 @@ function drawDigitalClock(curDate) {
   g.reset();
   g.setBgColor(colorBg);
   // Set Font
-  g.setFont(fontName, fontSizeLarge);
-  var ctimePosLeft = ctimePosCenter - g.stringWidth("00:00:00") / 2;
+  g.setFont(fontNameLarge, fontSizeLarge);
+  var ctimePosLeft = ctimePosCenter - g.stringWidth("12:34:56") / 2;
+  if (ctimePosLeft + g.stringWidth("00:00:00") > g.getWidth()) {
+    ctimePosLeft = g.getWidth() - g.stringWidth("00:00:00");
+  }
   if (lastTimeString) {
     // Clear the area where we want to draw the time.
     //g.setBgColor("#FF6600"); // for debugging
@@ -171,7 +173,7 @@ function drawDigitalClock(curDate) {
   if (datestring != lastDateString) {
     // Set Font
     g.setFont(fontName, fontSize);
-    var cdatePosLeft = cdatePosCenter - g.stringWidth("0000-00-00") / 2;
+    var cdatePosLeft = cdatePosCenter - g.stringWidth("1234-56-78") / 2;
     if (lastDateString) {
       // Clear the area where we want to draw the time.
       //g.setBgColor("#FF6600"); // for debugging
@@ -182,6 +184,7 @@ function drawDigitalClock(curDate) {
     }
     // Draw the current date.
     g.setColor(colorDate);
+    //g.setFontAlign(0, -1, 0); // Align following string to bottom right.
     g.drawString(datestring, cdatePosLeft, cdatePosTop);
     lastDateString = datestring;
   }
@@ -313,6 +316,7 @@ g.fillRect(0,sbarGapPos+gap+1,sbarWid,g.getHeight());
 updateStardate();
 updateConventionalTime();
 // Make sure widgets can be shown.
+//g.setColor("#FF0000"); g.fillRect(0,0,g.getWidth(),widgetsHeight); // debug
 Bangle.loadWidgets();
 Bangle.drawWidgets();
 // Show launcher on button press as usual for a clock face
