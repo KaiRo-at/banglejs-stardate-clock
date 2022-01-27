@@ -74,6 +74,7 @@ const colorBg = "#000000";
 const colorTime = "#9C9CFF";
 const colorDate = "#A09090";
 const colorStardate = "#FFCF00";
+// On low-bpp devices (Bangle.js 2), use basic colors for analog clock.
 const colorHours = g.getBPP() > 3 ? "#9C9CFF" : "#00FF00";
 const colorSeconds = g.getBPP() > 3 ? "#E7ADE7" : "#FFFF00";
 const colorHands = g.getBPP() > 3 ? "#A09090" : "#00FFFF";
@@ -142,11 +143,11 @@ function updateConventionalTime() {
 
 function drawDigitalClock(curDate) {
   var timestring = ("0" + curDate.getHours()).substr(-2) + ":"
-    +("0" + curDate.getMinutes()).substr(-2) + ":"
-    +("0 "+ curDate.getSeconds()).substr(-2);
+    + ("0" + curDate.getMinutes()).substr(-2) + ":"
+    + ("0" + curDate.getSeconds()).substr(-2);
   var datestring = "" + curDate.getFullYear() + "-"
-    +("0" + (curDate.getMonth() + 1)).substr(-2) + "-"
-    +("0" + curDate.getDate()).substr(-2);
+    + ("0" + (curDate.getMonth() + 1)).substr(-2) + "-"
+    + ("0" + curDate.getDate()).substr(-2);
 
   // Reset the state of the graphics library.
   g.reset();
@@ -192,7 +193,8 @@ function drawDigitalClock(curDate) {
 
 function drawLine(x1, y1, x2, y2, color) {
   g.setColor(color);
-  if (g.drawLineAA) {
+  // On high-bpp devices, use anti-aliasing. Low-bpp (Bangle.js 2) doesn't clear nicely with AA.
+  if (g.getBPP() > 3 && g.drawLineAA) {
     g.drawLineAA(x1, y1, x2, y2);
   }
   else {
