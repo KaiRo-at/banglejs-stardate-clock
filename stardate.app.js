@@ -1,4 +1,4 @@
-// Stardate clock face, by KaiRo.at, 2021
+// Stardate clock face, by KaiRo.at, 2021-2022
 
 var redrawClock = true;
 var clockface = "digital";
@@ -141,12 +141,12 @@ function updateConventionalTime() {
 }
 
 function drawDigitalClock(curDate) {
-  var timestring = ("0"+curDate.getHours()).substr(-2) + ":"
-    +("0"+curDate.getMinutes()).substr(-2) + ":"
-    +("0"+curDate.getSeconds()).substr(-2);
-  var datestring = ""+curDate.getFullYear() + "-"
-    +("0"+(curDate.getMonth()+1)).substr(-2) + "-"
-    +("0"+curDate.getDate()).substr(-2);
+  var timestring = ("0" + curDate.getHours()).substr(-2) + ":"
+    +("0" + curDate.getMinutes()).substr(-2) + ":"
+    +("0 "+ curDate.getSeconds()).substr(-2);
+  var datestring = "" + curDate.getFullYear() + "-"
+    +("0" + (curDate.getMonth() + 1)).substr(-2) + "-"
+    +("0" + curDate.getDate()).substr(-2);
 
   // Reset the state of the graphics library.
   g.reset();
@@ -287,42 +287,42 @@ g.clear();
 // Draw LCARS borders.
 // Upper section: rounded corner.
 g.setColor(colorLCARSGray);
-g.fillCircle(outRad,divisionPos-outRad,outRad);
-g.fillRect(outRad,divisionPos-outRad,sbarWid+inRad,divisionPos);
-g.fillRect(outRad,divisionPos-hbarHt,sbarWid+outRad,divisionPos); // div bar stub
-g.fillRect(0,0,sbarWid,divisionPos-outRad); // side bar
+g.fillCircle(outRad, divisionPos - outRad, outRad);
+g.fillRect(outRad, divisionPos - outRad, sbarWid + inRad, divisionPos);
+g.fillRect(outRad, divisionPos - hbarHt, sbarWid + outRad, divisionPos); // div bar stub
+g.fillRect(0, 0, sbarWid, divisionPos - outRad); // side bar
 g.setColor(colorBg); // blocked out areas of corner
-g.fillCircle(sbarWid+inRad+1,divisionPos-hbarHt-inRad-1,inRad);
-g.fillRect(sbarWid+1,divisionPos-outRad*2,sbarWid+outRad,divisionPos-hbarHt-inRad);
+g.fillCircle(sbarWid + inRad + 1, divisionPos - hbarHt - inRad - 1, inRad);
+g.fillRect(sbarWid + 1, divisionPos - outRad * 2, sbarWid + outRad, divisionPos - hbarHt - inRad);
 // upper division bar
 g.setColor(colorLCARSPurple);
-g.fillRect(sbarWid+outRad+gap+1,divisionPos-hbarHt,g.getWidth(),divisionPos);
+g.fillRect(sbarWid + outRad + gap + 1, divisionPos - hbarHt, g.getWidth(), divisionPos);
 // Lower section: rounded corner.
 g.setColor(colorLCARSPink);
-g.fillCircle(outRad,lowerTop+outRad,outRad);
-g.fillRect(outRad,lowerTop,sbarWid+inRad,lowerTop+outRad);
-g.fillRect(outRad,lowerTop,sbarWid+outRad,lowerTop+hbarHt); // div bar stub
-g.fillRect(0,lowerTop+outRad,sbarWid,sbarGapPos); // side bar
+g.fillCircle(outRad, lowerTop + outRad, outRad);
+g.fillRect(outRad, lowerTop, sbarWid + inRad, lowerTop + outRad);
+g.fillRect(outRad, lowerTop, sbarWid + outRad, lowerTop + hbarHt); // div bar stub
+g.fillRect(0, lowerTop + outRad, sbarWid, sbarGapPos); // side bar
 g.setColor(colorBg); // blocked out areas of corner
-g.fillCircle(sbarWid+inRad+1,lowerTop+hbarHt+inRad+1,inRad);
-g.fillRect(sbarWid+1,lowerTop+hbarHt+inRad,sbarWid+outRad,lowerTop+outRad*2);
+g.fillCircle(sbarWid + inRad + 1, lowerTop + hbarHt + inRad + 1, inRad);
+g.fillRect(sbarWid + 1, lowerTop + hbarHt + inRad, sbarWid + outRad, lowerTop + outRad * 2);
 // lower division bar
 g.setColor(colorLCARSOrange);
-g.fillRect(sbarWid+outRad+gap+1,lowerTop,g.getWidth(),lowerTop+hbarHt);
+g.fillRect(sbarWid + outRad + gap + 1, lowerTop, g.getWidth(), lowerTop + hbarHt);
 // second color of side bar
 g.setColor(colorLCARSBrown);
-g.fillRect(0,sbarGapPos+gap+1,sbarWid,g.getHeight());
+g.fillRect(0, sbarGapPos + gap + 1, sbarWid, g.getHeight());
 // Draw immediately at first.
 updateStardate();
 updateConventionalTime();
 // Make sure widgets can be shown.
-//g.setColor("#FF0000"); g.fillRect(0,0,g.getWidth(),widgetsHeight); // debug
+//g.setColor("#FF0000"); g.fillRect(0, 0, g.getWidth(), widgetsHeight); // debug
 Bangle.loadWidgets();
 Bangle.drawWidgets();
 // Show launcher on button press as usual for a clock face
 Bangle.setUI("clock", Bangle.showLauncher);
 // Stop updates when LCD is off, restart when on
-Bangle.on('lcdPower',on=>{
+Bangle.on('lcdPower', on => {
   if (on) {
     redrawClock = true;
     // Draw immediately to kick things off.
@@ -333,7 +333,7 @@ Bangle.on('lcdPower',on=>{
     redrawClock = false;
   }
 });
-Bangle.on('touch', button=>{
+Bangle.on('touch', button => {
   // button == 1 is left, 2 is right
   switchClockface();
 });
