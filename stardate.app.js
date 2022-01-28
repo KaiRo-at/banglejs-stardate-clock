@@ -3,7 +3,8 @@
 var redrawClock = true;
 var clockface = "digital";
 
-// note: Bangle.js 1 has 240x240, 2 has 176x176 screen
+// note: Bangle.js 1 has 240x240x16, 2 has 176x176x3 screen
+var bpp = g.getBPP ? g.getBPP() : 16;
 
 // Load fonts
 Graphics.prototype.setFontAntonio27 = function(scale) {
@@ -75,9 +76,9 @@ const colorTime = "#9C9CFF";
 const colorDate = "#A09090";
 const colorStardate = "#FFCF00";
 // On low-bpp devices (Bangle.js 2), use basic colors for analog clock.
-const colorHours = g.getBPP() > 3 ? "#9C9CFF" : "#00FF00";
-const colorSeconds = g.getBPP() > 3 ? "#E7ADE7" : "#FFFF00";
-const colorHands = g.getBPP() > 3 ? "#A09090" : "#00FFFF";
+const colorHours = bpp > 3 ? "#9C9CFF" : "#00FF00";
+const colorSeconds = bpp > 3 ? "#E7ADE7" : "#FFFF00";
+const colorHands = bpp > 3 ? "#A09090" : "#00FFFF";
 const colorLCARSGray = "#A09090";
 const colorLCARSOrange = "#FF9F00";
 const colorLCARSPink = "#E7ADE7";
@@ -194,7 +195,7 @@ function drawDigitalClock(curDate) {
 function drawLine(x1, y1, x2, y2, color) {
   g.setColor(color);
   // On high-bpp devices, use anti-aliasing. Low-bpp (Bangle.js 2) doesn't clear nicely with AA.
-  if (g.getBPP() > 3 && g.drawLineAA) {
+  if (bpp > 3 && g.drawLineAA) {
     g.drawLineAA(x1, y1, x2, y2);
   }
   else {
