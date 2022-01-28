@@ -298,7 +298,8 @@ function switchClockface() {
   }
   // Clear whole lower area.
   g.clearRect(clockAreaLeft,clockAreaTop,g.getWidth(),g.getHeight());
-  lastTimeString = undefined;
+  lastTimeStringToMin = undefined;
+  lastTimeStringSec = undefined;
   lastDateString = undefined;
   lastAnalogDate = undefined;
 }
