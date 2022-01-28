@@ -87,7 +87,8 @@ const colorLCARSBrown = "#C09070";
 // More colors: teal #008484, yellow FFCF00, purple #6050B0
 
 var lastSDateString;
-var lastTimeString;
+var lastTimeStringToMin;
+var lastTimeStringSec;
 var lastDateString;
 var lastAnalogDate;
 
@@ -143,9 +144,9 @@ function updateConventionalTime() {
 }
 
 function drawDigitalClock(curDate) {
-  var timestring = ("0" + curDate.getHours()).substr(-2) + ":"
-    + ("0" + curDate.getMinutes()).substr(-2) + ":"
-    + ("0" + curDate.getSeconds()).substr(-2);
+  var timestringToMin = ("0" + curDate.getHours()).substr(-2) + ":"
+    + ("0" + curDate.getMinutes()).substr(-2) + ":";
+  var timestringSec = ("0" + curDate.getSeconds()).substr(-2);
   var datestring = "" + curDate.getFullYear() + "-"
     + ("0" + (curDate.getMonth() + 1)).substr(-2) + "-"
     + ("0" + curDate.getDate()).substr(-2);
@@ -159,18 +160,32 @@ function drawDigitalClock(curDate) {
   if (ctimePosLeft + g.stringWidth("00:00:00") > g.getWidth()) {
     ctimePosLeft = g.getWidth() - g.stringWidth("00:00:00");
   }
-  if (lastTimeString) {
-    // Clear the area where we want to draw the time.
+  g.setColor(colorTime);
+  if (timestringToMin != lastTimeStringToMin) {
+    if (lastTimeStringToMin) {
+      // Clear the area where we want to draw the time.
+      //g.setBgColor("#FF6600"); // for debugging
+      g.clearRect(ctimePosLeft,
+                  ctimePosTop,
+                  ctimePosLeft + g.stringWidth(lastTimeStringToMin) + 1,
+                  ctimePosTop + g.getFontHeight());
+    }
+    // Draw the current time.
+    g.drawString(timestringToMin, ctimePosLeft, ctimePosTop);
+    lastTimeStringToMin = timestringToMin;
+  }
+  var ctimePosLeftSec = ctimePosLeft + g.stringWidth(timestringToMin);
+  if (lastTimeStringSec) {
+    // Clear the area where we want to draw the seconds.
     //g.setBgColor("#FF6600"); // for debugging
-    g.clearRect(ctimePosLeft,
+    g.clearRect(ctimePosLeftSec,
                 ctimePosTop,
-                ctimePosLeft + g.stringWidth(lastTimeString) + 1,
+                ctimePosLeftSec + g.stringWidth(lastTimeStringSec) + 1,
                 ctimePosTop + g.getFontHeight());
   }
-  // Draw the current time.
-  g.setColor(colorTime);
-  g.drawString(timestring, ctimePosLeft, ctimePosTop);
-  lastTimeString = timestring;
+  // Draw the current seconds.
+  g.drawString(timestringSec, ctimePosLeftSec, ctimePosTop);
+  lastTimeStringSec = timestringSec;
 
   if (datestring != lastDateString) {
     // Set Font
